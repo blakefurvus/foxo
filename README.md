@@ -1,0 +1,2 @@
+# foxo
+Foxo Language
