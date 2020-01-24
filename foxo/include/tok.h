@@ -14,19 +14,24 @@
     /* Invincibles */ \
     X(EOF) \
     X(EOL) \
+    X(INDENT) \
+    X(DEDENT) \
 \
     /* Literals */ \
-    X(SYMBOL) \
-    X(INT) \
-    X(STRING) \
+    X(SYM) \
+    X(LIT) \
 \
     /* Keywords */ \
     X(LET) \
-    X(RETURN) \
+    X(RET) \
 \
     /* Operators */ \
-    X(EQUAL) \
-    X(DSCOLON)
+    X(EQ) \
+\
+    /* Parsing specials */ \
+    X(F_DEF) \
+    X(F_CALL) \
+    X(SCOPE)
 
 typedef enum {
     #define X(value) FX_TOKTYPE_##value,

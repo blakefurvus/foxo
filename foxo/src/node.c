@@ -1,6 +1,6 @@
 #include "node.h"
 
-fx_node fx_free_node(fx_node *node)
+void fx_free_node(fx_node *node)
 {
     if (node->children) {
         for (unsigned int i = 0; i < node->len; i++)

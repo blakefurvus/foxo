@@ -6,4 +6,4 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-#include "compiler.h"
+#include "parse.h"

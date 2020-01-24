@@ -3,8 +3,9 @@
 
 #define VARTYPES \
     X(ANY, void, null) \
+    X(FUN, void, null) \
     X(INT, int, %d) \
-    X(STRING, char *, %s)
+    X(STR, char *, %s)
 
 typedef enum {
     #define X(value, ret, fmt) FX_VARTYPE_##value,

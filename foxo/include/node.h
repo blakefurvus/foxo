@@ -11,7 +11,7 @@ struct fx_node {
     fx_node *children;
 };
 
-fx_node fx_free_node(fx_node *node);
+void fx_free_node(fx_node *node);
 void fx_print_node(fx_node *node, unsigned int indent);
 
 #endif
