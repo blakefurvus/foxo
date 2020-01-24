@@ -1,15 +1,16 @@
-solution "foxo"
+workspace "foxo"
     configurations {"debug", "release"}
+    toolset "clang"
 
     BASE_DIR = path.getabsolute(".")
     targetdir (BASE_DIR .. "/bin")
     objdir (BASE_DIR .. "/bin/obj")
 
-    configuration "debug"
-        flags { "symbols" }
-
-    configuration "release"
+    filter "configurations:debug"
+        symbols "on"
+    
+    filter "configurations:release"
         defines { "NDEBUG" }
-        flags { "optimize" }
+        optimize "on"
 
 include "foxo"
