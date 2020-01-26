@@ -6,32 +6,119 @@ fx_node fx_next_node(fx_comp_state *state)
 
     switch (tok.type) {
 
-        // Function definitions
-        case FX_TOKTYPE_F_DEF:
-        case FX_TOKTYPE_LET: {
+        // Functions, symbols & variables
+        case FX_TOKTYPE_SYM: {
+            // Name
+            fx_tok name = tok;
+            tok = fx_peek_tok(state);
 
-            // Functions name
-            fx_tok fname = fx_next_tok(state);
-            fname.type = tok.type;
+            // Args
+            fx_node args = {
+                (fx_tok){FX_TOKTYPE_ARGS},
+                0, calloc(state->len, sizeof(fx_node))
+            };
 
-            // TODO: Parse arguments too
+            // Is either a function call or definition
+            if (tok.type == FX_TOKTYPE_L_PAREN) {
+                fx_next_tok(state);
 
-            // TODO: Error handling
-            if (fx_next_tok(state).type != FX_TOKTYPE_EQ) {
-                puts("Expected a '='");
-                exit(EXIT_FAILURE);
+                // No args f()
+                if (fx_peek_tok(state).type == FX_TOKTYPE_R_PAREN) {
+                    fx_next_tok(state);
+
+                    // Function definition f() =
+                    if (fx_peek_tok(state).type == FX_TOKTYPE_EQ) {
+                        name.type = FX_TOKTYPE_F_DEF;
+                        fx_next_tok(state);
+
+                        fx_node *context = calloc(2, sizeof(fx_node));
+                        context[0] = args;
+                        context[1] = fx_next_node(state);
+
+                        if (context[1].tok.type != FX_TOKTYPE_SCOPE) {
+                            fx_node scope = {
+                                (fx_tok){FX_TOKTYPE_SCOPE},
+                                1, malloc(sizeof(fx_node))
+                            };
+                            scope.children[0] = context[1];
+                            context[1] = scope;
+                        }
+
+                        return (fx_node){name, 2, context};
+                    }
+
+                    // Function call f()...
+                    else {
+                        name.type = FX_TOKTYPE_F_CALL;
+                        return (fx_node){name, args.len, args.children};
+                    }
+
+                }
+
+                // Has args f(...)
+                else {
+                    while (1) {
+                        args.children[args.len++] = fx_next_node(state);
+
+                        tok = fx_next_tok(state);
+                        if (tok.type == FX_TOKTYPE_COMMA)
+                            continue;
+                        else if (tok.type == FX_TOKTYPE_R_PAREN)
+                            break;
+                        else {
+                            // TODO: Error handling
+                            printf(
+                                "Expected ',' or ')'. Found %s\n",
+                                fx_toktype_str[tok.type]
+                            );
+                            exit(EXIT_FAILURE);
+                        }
+                    }
+
+                    // Function definition f(...) =
+                    if (fx_peek_tok(state).type == FX_TOKTYPE_EQ) {
+                        name.type = FX_TOKTYPE_F_DEF;
+                        fx_next_tok(state);
+
+                        fx_node *context = calloc(2, sizeof(fx_node));
+                        context[0] = args;
+                        context[1] = fx_next_node(state);
+
+                        if (context[1].tok.type != FX_TOKTYPE_SCOPE) {
+                            fx_node scope = {
+                                (fx_tok){FX_TOKTYPE_SCOPE},
+                                1, malloc(sizeof(fx_node))
+                            };
+                            scope.children[0] = context[1];
+                            context[1] = scope;
+                        }
+
+                        return (fx_node){name, 2, context};
+                    }
+
+                    // Function call f(...)
+                    name.type = FX_TOKTYPE_F_CALL;
+                    return (fx_node){name, args.len, args.children};
+                }
             }
 
-            // Functions body
-            fx_node *contents = calloc(1, sizeof(fx_node));
-            contents[0] = fx_next_node(state);
+            // Equation x = y
+            else if (tok.type == FX_TOKTYPE_EQ) {
+                tok = fx_next_tok(state);
 
-            return (fx_node){fname, 1, contents};
-            break;
+                fx_node *context = calloc(2, sizeof(fx_node));
+                context[0] = (fx_node){name};
+                context[1] = fx_next_node(state);
 
+                return (fx_node){tok, 2, context};
+            }
+
+            // Is a symbol/variable
+            free(args.children);
+            return (fx_node){name};
         }
 
-        // Code scopes
+        // Scope
         case FX_TOKTYPE_INDENT: {
             unsigned int statements_len = 0;
             fx_node *statements = calloc(state->len, sizeof(fx_node));
@@ -53,26 +140,9 @@ fx_node fx_next_node(fx_comp_state *state)
             break;
         }
 
-        // Function calls & constants
-        case FX_TOKTYPE_SYM: {
-            unsigned int args_len = 0;
-            fx_node *args = calloc(state->len, sizeof(fx_node));
-
-            fx_tok peek = fx_peek_tok(state);
-            while (peek.type == FX_TOKTYPE_SYM || peek.type == FX_TOKTYPE_LIT) {
-                args[args_len++] = fx_next_node(state);
-                peek = fx_peek_tok(state);
-            }
-
-            if (args_len != 0)
-                tok.type = FX_TOKTYPE_F_CALL;
-
-            return (fx_node){tok, args_len, args};
-        }
-
         // Default (returns the tok)
         default: {
-            return (fx_node){tok, 0, NULL};
+            return (fx_node){tok};
             break;
         }
     }

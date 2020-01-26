@@ -29,8 +29,8 @@ int main(int argc, char **argv)
 
         fx_node node;
         while ((node = fx_next_node(&state)).tok.type) {
-            fx_print_node(&node, 0);
-            fx_free_node(&node);
+            fx_deduce_type(&state, &node);
+            fx_print_node(&node);
         }
 
         fx_free_comp_state(&state);
@@ -54,8 +54,15 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[1], "parse")) {
             fx_node node;
             while ((node = fx_next_node(&state)).tok.type) {
-                fx_print_node(&node, 0);
+                fx_print_node(&node);
                 fx_free_node(&node);
+            }
+        }
+        else if (!strcmp(argv[1], "deduce")) {
+            fx_node node;
+            while ((node = fx_next_node(&state)).tok.type) {
+                fx_deduce_type(&state, &node);
+                fx_print_node(&node);
             }
         }
 

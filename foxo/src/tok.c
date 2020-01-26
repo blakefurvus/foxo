@@ -8,8 +8,12 @@ void fx_free_tok(fx_tok *tok)
 
 void fx_print_tok(fx_tok *tok)
 {
-    printf("fx_tok(%s", fx_toktype_str[tok->type]);
+    printf("(%s", fx_toktype_str[tok->type]);
+
     if (tok->val)
         printf(", '%s'", tok->val);
+
+    printf(", %s", fx_vartype_str[tok->var_type]);
+
     puts(")");
 }

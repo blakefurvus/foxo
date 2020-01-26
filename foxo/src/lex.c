@@ -43,12 +43,6 @@ fx_tok fx_next_tok(fx_comp_state *state)
             *buf++ = *state->iter++;
         *buf = '\0';
 
-        if (!strcmp(bufbase, "let")) {
-            return state->indent_dep == 0
-                ? (fx_tok){FX_TOKTYPE_F_DEF}
-                : (fx_tok){FX_TOKTYPE_LET};
-        }
-
         return (fx_tok){FX_TOKTYPE_SYM, strdup(bufbase)};
     }
 
@@ -77,6 +71,20 @@ fx_tok fx_next_tok(fx_comp_state *state)
     else if (*state->iter == '=') {
         state->iter++;
         return (fx_tok){FX_TOKTYPE_EQ};
+    }
+
+    // Punctuation
+    else if (*state->iter == '(') {
+        state->iter++;
+        return (fx_tok){FX_TOKTYPE_L_PAREN};
+    }
+    else if (*state->iter == ')') {
+        state->iter++;
+        return (fx_tok){FX_TOKTYPE_R_PAREN};
+    }
+    else if (*state->iter == ',') {
+        state->iter++;
+        return (fx_tok){FX_TOKTYPE_COMMA};
     }
 
     // Dedents at eof

@@ -7,3 +7,4 @@
 #include <readline/history.h>
 
 #include "parse.h"
+#include "deduce.h"

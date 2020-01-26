@@ -12,6 +12,8 @@ struct fx_node {
 };
 
 void fx_free_node(fx_node *node);
-void fx_print_node(fx_node *node, unsigned int indent);
+
+#define fx_print_node(node) _fx_print_node(node, 0)
+void _fx_print_node(fx_node *node, unsigned int indent);
 
 #endif

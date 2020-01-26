@@ -21,17 +21,19 @@
     X(SYM) \
     X(LIT) \
 \
-    /* Keywords */ \
-    X(LET) \
-    X(RET) \
-\
     /* Operators */ \
     X(EQ) \
+\
+    /* Punctuation */ \
+    X(L_PAREN) \
+    X(R_PAREN) \
+    X(COMMA) \
 \
     /* Parsing specials */ \
     X(F_DEF) \
     X(F_CALL) \
-    X(SCOPE)
+    X(ARGS) \
+    X(SCOPE) \
 
 typedef enum {
     #define X(value) FX_TOKTYPE_##value,
